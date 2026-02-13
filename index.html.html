@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laboratorio de Psicología | IBERO Amalfi</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --ibero-yellow: #FFD700; 
+            --ibero-black: #000000;  
+            --ibero-dark: #121212;
+            --text-light: #ffffff;
+            --transition: all 0.3s ease;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: var(--ibero-black); color: var(--text-light); display: flex; min-height: 100vh; overflow-x: hidden; }
+
+        /* --- SIDEBAR --- */
+        nav {
+            width: 280px; background: var(--ibero-black); color: var(--ibero-yellow);
+            padding: 30px; position: fixed; height: 100vh; border-right: 1px solid var(--ibero-yellow); z-index: 1000;
+        }
+        nav .brand { text-align: center; margin-bottom: 40px; }
+        nav h2 { font-size: 1.1rem; margin-top: 10px; text-transform: uppercase; letter-spacing: 2px; }
+        nav ul { list-style: none; }
+        nav ul li {
+            padding: 14px; margin-bottom: 8px; border-radius: 5px; cursor: pointer;
+            transition: var(--transition); display: flex; align-items: center; font-size: 0.9rem;
+        }
+        nav ul li i { margin-right: 15px; width: 20px; font-size: 1.2rem; }
+        nav ul li:hover, nav ul li.active { background: var(--ibero-yellow); color: var(--ibero-black); font-weight: bold; }
+
+        /* --- MAIN --- */
+        main { flex: 1; margin-left: 280px; padding: 40px; }
+        header {
+            background: var(--ibero-dark); padding: 25px 35px; border-radius: 10px;
+            border-bottom: 4px solid var(--ibero-yellow); margin-bottom: 35px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+
+        .section { display: none; animation: fadeIn 0.6s ease; }
+        .section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .card { 
+            background: var(--ibero-dark); padding: 30px; border-radius: 10px; 
+            margin-bottom: 25px; border: 1px solid #222;
+        }
+        .card h3 { color: var(--ibero-yellow); margin-bottom: 15px; text-transform: uppercase; border-left: 4px solid var(--ibero-yellow); padding-left: 15px; }
+
+        /* NOTA RESTRICCIÓN */
+        .nota-restriccion {
+            background: rgba(255, 215, 0, 0.1); border: 1px dashed var(--ibero-yellow);
+            padding: 20px; border-radius: 10px; margin-bottom: 25px; color: var(--ibero-yellow); font-size: 0.9rem;
+        }
+
+        /* BOTONES */
+        .btn {
+            background: var(--ibero-yellow); color: var(--ibero-black); padding: 14px 28px;
+            border: none; border-radius: 5px; cursor: pointer; font-weight: bold;
+            text-decoration: none; display: inline-block; transition: var(--transition);
+            text-transform: uppercase; font-size: 0.85rem; width: 100%; text-align: center; margin-bottom: 10px;
+        }
+        .btn:hover { background: #fff; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3); }
+
+        /* GRID */
+        .test-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 15px; }
+        .test-item { 
+            background: #0a0a0a; padding: 20px; border-radius: 8px; border: 1px solid #222; 
+            cursor: pointer; transition: 0.3s; position: relative;
+        }
+        .test-item:hover { border-color: var(--ibero-yellow); background: #111; }
+        .test-item h4 { color: var(--ibero-yellow); margin-bottom: 5px; font-size: 0.9rem; }
+        .test-item p { font-size: 0.75rem; color: #888; }
+
+        /* MODAL FICHA TÉCNICA */
+        .modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95); display: none; justify-content: center; align-items: center; z-index: 2000; padding: 20px;
+        }
+        .modal-content {
+            background: #1a1a1a; padding: 40px; border-radius: 15px; max-width: 700px; 
+            width: 100%; border: 2px solid var(--ibero-yellow); position: relative;
+            max-height: 90vh; overflow-y: auto;
+        }
+        .close-btn { position: absolute; top: 20px; right: 20px; color: var(--ibero-yellow); font-size: 1.5rem; cursor: pointer; }
+        .modal-body h2 { color: var(--ibero-yellow); margin-bottom: 20px; text-transform: uppercase; border-bottom: 1px solid #333; padding-bottom: 10px; }
+        .modal-body p { margin-bottom: 12px; font-size: 0.95rem; line-height: 1.6; color: #ccc; }
+        .modal-body strong { color: var(--ibero-yellow); }
+
+        /* MODAL CONSENTIMIENTO */
+        #modalEthics { display: flex; z-index: 3000; }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            nav { width: 100%; height: auto; position: relative; border-right: none; border-bottom: 1px solid var(--ibero-yellow); }
+            main { margin-left: 0; padding: 20px; }
+            header { flex-direction: column; text-align: center; }
+            header img { margin-top: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- CONSENTIMIENTO -->
+    <div id="modalEthics" class="modal">
+        <div class="modal-content" style="text-align: center;">
+            <i class="fas fa-user-shield fa-3x" style="color: var(--ibero-yellow); margin-bottom: 20px;"></i>
+            <h2>Consentimiento Informado</h2>
+            <p style="text-align: justify;">
+                Al utilizar esta herramienta, usted acepta participar voluntariamente en el fortalecimiento del Laboratorio de Psicología IBERO. Sus respuestas son confidenciales y se utilizarán para fines académicos (Ley 1090 de 2006).
+            </p>
+            <br>
+            <button class="btn" onclick="document.getElementById('modalEthics').style.display='none'">ACEPTAR Y CONTINUAR</button>
+        </div>
+    </div>
+
+    <!-- NAVEGACIÓN -->
+    <nav>
+        <div class="brand">
+            <i class="fas fa-brain fa-3x"></i>
+            <h2>PsicoLab Amalfi</h2>
+        </div>
+        <ul>
+            <li class="active" onclick="showView('inicio', this)"><i class="fas fa-house"></i> Inicio</li>
+            <li onclick="showView('nosotros', this)"><i class="fas fa-info-circle"></i> Nosotros</li>
+            <li onclick="showView('evaluacion', this)"><i class="fas fa-clipboard-check"></i> Evaluación (Forms)</li>
+            <li onclick="showView('catalogo', this)"><i class="fas fa-key"></i> Catálogo PIN</li>
+            <li onclick="showView('software', this)"><i class="fas fa-laptop-code"></i> Software Digital</li>
+            <li onclick="showView('recursos', this)"><i class="fas fa-graduation-cap"></i> Capacitación TIC</li>
+            <li onclick="showView('contacto', this)"><i class="fas fa-headset"></i> Soporte</li>
+        </ul>
+    </nav>
+
+    <main>
+        <header>
+            <div>
+                <h1 id="view-title" style="color: var(--ibero-yellow);">Sede Amalfi</h1>
+                <p style="color: #888; font-size: 0.85rem;"><i class="fas fa-location-dot"></i> Carrera 16 #79–34, Bogotá</p>
+            </div>
+            <img src="https://www.ibero.edu.co/wp-content/uploads/2022/10/logo-ibero-2022.png" height="35" style="filter: brightness(0) invert(1);">
+        </header>
+
+        <!-- SECCIONES -->
+        <section id="inicio" class="section active">
+            <div class="card">
+                <h3>Explora el Laboratorio de Psicología</h3>
+                <p style="line-height: 1.8; color: #ccc;">
+                    Bienvenidos al catálogo oficial de la sede Amalfi. Espacio diseñado para el acceso a instrumentos de evaluación psicológica organizados de manera clara, segura y confiable.
+                </p>
+                <div class="test-grid" style="margin-top:20px;">
+                    <div onclick="showView('evaluacion', null)" style="cursor:pointer; background:#0a0a0a; padding:20px; border-radius:8px; border:1px solid #222; text-align:center;">
+                        <i class="fas fa-clipboard-check fa-2x" style="color:var(--ibero-yellow); margin-bottom:10px;"></i>
+                        <h4 style="color:var(--ibero-yellow);">Evaluación por Forms</h4>
+                        <p style="font-size:0.75rem; color:#888;">Accede a formularios digitales estructurados</p>
+                    </div>
+                    <div onclick="showView('catalogo', null)" style="cursor:pointer; background:#0a0a0a; padding:20px; border-radius:8px; border:1px solid #222; text-align:center;">
+                        <i class="fas fa-key fa-2x" style="color:var(--ibero-yellow); margin-bottom:10px;"></i>
+                        <h4 style="color:var(--ibero-yellow);">Pruebas con PIN</h4>
+                        <p style="font-size:0.75rem; color:#888;">Catálogo de instrumentos digitales</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="nosotros" class="section">
+            <div class="card">
+                <h3>Sobre el Laboratorio</h3>
+                <p style="line-height:1.8; color:#ccc; margin-bottom:15px;">
+                    El Laboratorio de Psicología de la sede Amalfi es un espacio diseñado para la formación práctica y aplicada de estudiantes de psicología, integrado con herramientas digitales avanzadas.
+                </p>
+                <p style="color:#ccc;"><strong style="color:var(--ibero-yellow);">Misión:</strong> Facilitar el acceso a herramientas validadas que permitan desarrollar competencias profesionales en diagnóstico, intervención y ética psicológica.</p>
+            </div>
+        </section>
+
+        <section id="evaluacion" class="section">
+            <div class="nota-restriccion">
+                <i class="fas fa-exclamation-triangle"></i> <strong>ACCESO RESTRINGIDO:</strong> Las evaluaciones aquí listadas están destinadas únicamente a docentes y estudiantes autorizados.
+            </div>
+            <div class="card">
+                <h3>Evaluaciones por Google Forms</h3>
+                <p style="margin-bottom: 20px; color: #ccc;">Instrumentos digitalizados para facilitar el acceso desde cualquier dispositivo.</p>
+                <a href="https://forms.gle/wy8aVxT7j8qKnBN68" target="_blank" class="btn"><i class="fas fa-file-alt"></i> WSA - Estilos de Trabajo</a>
+                <a href="https://forms.gle/SxxjHg5FMDGWnKHE6" target="_blank" class="btn"><i class="fas fa-file-alt"></i> Ansiedad (ISRA)</a>
+                <a href="https://forms.gle/zS4cWtCXqgfK8vZF8" target="_blank" class="btn"><i class="fas fa-file-alt"></i> Depresión (BDI)</a>
+                <a href="https://forms.gle/K4CtN6BDtA16q47KA" target="_blank" class="btn"><i class="fas fa-file-alt"></i> Síntomas (SCL-90-R)</a>
+            </div>
+        </section>
+
+        <section id="catalogo" class="section">
+            <div class="nota-restriccion">
+                <i class="fas fa-lock"></i> <strong>SOLO PERSONAL AUTORIZADO:</strong> El acceso requiere credenciales institucionales.
+            </div>
+            <div class="card">
+                <h3>Catálogo de Instrumentos con PIN</h3>
+                <p style="margin-bottom: 20px; color: #ccc;">Haz clic en cada prueba para ver su ficha técnica.</p>
+                <div class="test-grid" id="pinTestGrid"></div>
+                <br>
+                <a href="https://689a1c4e11a56.site123.me/cl%C3%ADnicas" target="_blank" class="btn" style="background:#f39c12">Abrir Catálogo Externo Detallado</a>
+            </div>
+        </section>
+
+        <section id="software" class="section">
+            <div class="card">
+                <h3>💻 Software Psicológico Institucional</h3>
+                <p style="margin-bottom: 20px; color: #ccc;">Plataformas digitalizadas para una aplicación interactiva y precisa.</p>
+                <div class="test-grid">
+                    <!-- PARROT -->
+                    <div class="test-item" style="border-color: #f39c12; cursor: default;">
+                        <h4>Parrot Software</h4>
+                        <p>Instrumento digital para facilitar la aplicación, el registro y el análisis en entornos académicos.</p>
+                        <br>
+                        <a href="https://www.parrotsoftware.com/spanishmobile/" target="_blank" class="btn" style="font-size: 0.7rem; padding: 8px;">Abrir Parrot Mobile</a>
+                    </div>
+                    <!-- 3DISSECT -->
+                    <div class="test-item" style="border-color: #f39c12; cursor: default;">
+                        <h4>3DiSETC (3dissect)</h4>
+                        <p>Sistema informatizado que evalúa dimensiones psicológicas con precisión anatómica y técnica.</p>
+                        <br>
+                        <a href="https://www.3dissect.com/home/#/login-form?redirect=/tomo" target="_blank" class="btn" style="font-size: 0.7rem; padding: 8px;">Abrir Plataforma 3dissect</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="recursos" class="section">
+            <div class="card">
+                <h3>Capacitación Multimedia</h3>
+                <div style="display:grid; gap:10px;">
+                    <a href="https://laiberocol.sharepoint.com/sites/Grabacion_5zo3br/_layouts/15/stream.aspx?id=%2Fsites%2FGrabacion%5F5zo3br%2FDocumentos%20compartidos%2FGeneral%2FRecordings%2FWSA%20Evaluaci%C3%B3n%20de%20Estilos%20de%20Trabajo%2D20251031%5F124128%2DGrabaci%C3%B3n%20de%20la%20reuni%C3%B3n%2Emp4" target="_blank" class="btn" style="background:#27ae60; color:white;"><i class="fas fa-video"></i> Capacitación 1: Estilos de Trabajo (WSA)</a>
+                    <a href="https://laiberocol.sharepoint.com/sites/PruebasdePindigital/Documentos%20compartidos/General/Recordings/BFNQA-20251104_113250-Grabaci%C3%B3n%20de%20la%20reuni%C3%B3n.mp4?web=1" target="_blank" class="btn" style="background:#27ae60; color:white;"><i class="fas fa-video"></i> Capacitación 2: Grabación BFNQA</a>
+                </div>
+            </div>
+        </section>
+
+        <section id="contacto" class="section">
+            <div class="card">
+                <h3>Soporte y Contacto</h3>
+                <p><i class="fas fa-envelope"></i> laboratorio.psicologia@ibero.edu.co</p>
+                <p><i class="fas fa-location-dot"></i> Carrera 16 #79–34, Bogotá</p>
+                <p style="margin-top: 10px; font-size: 0.8rem; color: #888;">* Solo se autoriza el acceso a las pruebas PIN a docentes e investigadores.</p>
+            </div>
+        </section>
+    </main>
+
+    <!-- MODAL DETALLE -->
+    <div id="testModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <div id="modalBody" class="modal-body"></div>
+        </div>
+    </div>
+
+    <script>
+        const testData = {
+            "IDE": {
+                year: "2025", constructo: "Dependencia Emocional en las Relaciones de Pareja",
+                purpose: "Guiar intervenciones para construir vínculos saludables.",
+                authors: "Jesús Joel Aiquipa Tello (UNMSM)",
+                app: "Individual o colectiva", duration: "20 a 25 minutos",
+                age: "Adultos ≥18 años", format: "Semidigital (Manual físico / Electrónico)"
+            },
+            "BFQ": {
+                year: "1998", constructo: "Personalidad (Big Five)",
+                purpose: "Evalúa energía, afabilidad, tesón, estabilidad y apertura.",
+                authors: "G.V. Caprara, C. Barbaranelli y L. Borgogni",
+                app: "Individual o colectiva", duration: "20 a 30 minutos",
+                age: "Adolescentes y adultos", format: "Parcialmente digital (Pines 0/25)"
+            },
+            "MMPI-2-RF": {
+                year: "1998", constructo: "Personalidad y Psicopatología",
+                purpose: "Diagnóstico clínico complejo.",
+                authors: "Ben-Porath, Y. S. & Tellegen, A.",
+                app: "Individual", duration: "35 a 50 minutos",
+                age: "18 años en adelante", format: "Parcialmente Digital (Clave PIN)"
+            },
+            "16PF-5": {
+                year: "2000", constructo: "Personalidad",
+                purpose: "Evalúa 16 rasgos primarios.",
+                authors: "R. B. Cattell, A. K. S. Cattell y H. E. P.",
+                app: "Individual", duration: "40 a 45 minutos",
+                age: "Adolescentes y adultos", format: "Semidigital (Manual físico / Tarjeta digital)"
+            },
+            "TONI 4": {
+                year: "2019", constructo: "Inteligencia no verbal",
+                purpose: "Evalúa inteligencia sin requerir lenguaje.",
+                authors: "L. Brown, R. J. Sherbenov y S. K. Johnsen",
+                app: "Individual", duration: "15 minutos por forma",
+                age: "6 a 79 años", format: "Semidigital"
+            },
+            "BRIEF 2": {
+                year: "2017", constructo: "Funcionamiento Ejecutivo",
+                purpose: "Mide aspectos conductuales en la vida diaria.",
+                authors: "Gerard A. Gioia y otros",
+                app: "Individual / Heteroevaluación", duration: "10 a 15 min",
+                age: "5 a 18 años", format: "Semidigital"
+            },
+            "DP-3": {
+                year: "2018", constructo: "Desarrollo Infantil Integral",
+                purpose: "Perfil cognitivo, motor, socioemocional y adaptativo.",
+                authors: "Gerald D. Alpern",
+                app: "Individual", duration: "35 minutos",
+                age: "0 a 12 años", format: "Semidigital"
+            },
+            "COMPETEA": {
+                year: "2015", constructo: "Competencias Laborales",
+                purpose: "Evaluar habilidades profesionales y socioemocionales.",
+                authors: "Martínez Arias, R., Hernández, P.",
+                app: "Individual", duration: "30 a 45 minutos",
+                age: "18 años en adelante", format: "Semidigital"
+            }
+        };
+
+        function showView(viewId, element) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('nav ul li').forEach(li => li.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+            if(element) element.classList.add('active');
+            window.scrollTo(0,0);
+        }
+
+        function openModal(testKey) {
+            const data = testData[testKey];
+            const body = document.getElementById('modalBody');
+            body.innerHTML = `
+                <h2>${testKey}</h2>
+                <p><strong>Año de edición:</strong> ${data.year}</p>
+                <p><strong>Constructo:</strong> ${data.constructo}</p>
+                <p><strong>Propósito:</strong> ${data.purpose}</p>
+                <p><strong>Autores:</strong> ${data.authors}</p>
+                <p><strong>Aplicación:</strong> ${data.app}</p>
+                <p><strong>Duración:</strong> ${data.duration}</p>
+                <p><strong>Edad:</strong> ${data.age}</p>
+                <p><strong>Formato:</strong> ${data.format}</p>
+            `;
+            document.getElementById('testModal').style.display = 'flex';
+        }
+
+        function closeModal() { document.getElementById('testModal').style.display = 'none'; }
+
+        window.onload = () => {
+            const container = document.getElementById('pinTestGrid');
+            Object.keys(testData).forEach(key => {
+                const div = document.createElement('div');
+                div.className = 'test-item';
+                div.onclick = () => openModal(key);
+                div.innerHTML = `<h4>${key}</h4><p>${testData[key].constructo}</p>`;
+                container.appendChild(div);
+            });
+        };
+    </script>
+</body>
+</html>
